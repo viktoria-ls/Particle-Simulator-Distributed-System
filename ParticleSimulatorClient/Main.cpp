@@ -22,8 +22,8 @@ const double frameHeight = 720;
 
 const double spriteSize = std::min((frameWidth / 33.0), (frameHeight / 19.0));
 
-const int userVelocity = 10;
-Sprite user = {50, 50};
+const int userVelocity = 1;
+Sprite user = {60, 50};
 
 // TODO: Send direction (and speed?) to server so it can 
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -52,26 +52,39 @@ static void drawElements(std::vector<Sprite> &particles, float frameWindowWidth,
 	double clientUserY = frameWindowHeight + (frameHeight / 2);
 	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize/2.0, IM_COL32_WHITE, 32);
 
-	/*double translatedPX = clientUserX + ((particles[0].x - user.x) * spriteSize / 2.0);
+	for (int i = 0; i < particles.size(); i++) {
+		/*double translatedPX = clientUserX + ((particles[0].x - user.x) * spriteSize / 2.0);
 	double translatedPY = clientUserY + ((particles[0].y - user.y) * spriteSize / 2.0);*/
 	double translatedPX = (clientUserX / user.x) * particles[0].x;
 	double translatedPY = (clientUserY / user.y) * particles[0].y;
-	drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize/2.0, IM_COL32(160, 32, 240, 255), 32);
 
-	std::cout << "gorp\n";
-	std::cout << clientUserX << "\n";
-	std::cout << clientUserY << "\n";
-	std::cout << translatedPX << "\n";
-	std::cout << translatedPY << "\n";
+		std::cout << i << " " << translatedPX << "\n";
+		std::cout << i << " " << translatedPY << "\n";
+
+		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
+	}
+
+	//std::cout << "gorp\n";
+	//std::cout << user.x << "\n";
+	//std::cout << user.y << "\n";
+	//std::cout << translatedPX << "\n";
+	//std::cout << translatedPY << "\n";
 
 }
 
 int main()
 {
 	// dummy particle list
-	std::vector<Sprite> particles = {Sprite(), Sprite(), Sprite(), Sprite(), Sprite()};
-	particles[0].x = 70;
-	particles[0].y = 50;
+	std::vector<Sprite> particles = {Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite() };
+	particles[0] = {user.x, user.y + 5};
+	particles[1] = { user.x, user.y + spriteSize * 2 };
+	particles[2] = { user.x, user.y + spriteSize * 3 };
+	particles[3] = { user.x, user.y + spriteSize * 4 };
+	particles[4] = { user.x, user.y + spriteSize * 5 };
+	particles[5] = { user.x, user.y + spriteSize * 6 };
+	particles[6] = { user.x, user.y + spriteSize * 7 };
+	particles[7] = { user.x, user.y + spriteSize * 8 };
+	particles[8] = { user.x, user.y + spriteSize * 9 };
 
 	// Initialize GLFW
 	glfwInit();
