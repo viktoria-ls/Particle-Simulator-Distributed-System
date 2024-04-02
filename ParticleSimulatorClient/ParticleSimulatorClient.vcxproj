@@ -112,6 +112,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +129,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,8 +141,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui.cpp" />
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_demo.cpp" />
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_draw.cpp" />
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_tables.cpp" />
+    <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_widgets.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Temp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imconfig.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imgui.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imgui_internal.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imstb_rectpack.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imstb_textedit.h" />
+    <ClInclude Include="C:\Users\Leela\Desktop\imgui\imstb_truetype.h" />
+    <ClInclude Include="imgui\imgui_impl_opengl3_loader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
