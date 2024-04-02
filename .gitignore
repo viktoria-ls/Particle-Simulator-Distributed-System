@@ -1,0 +1,41 @@
+# Visual Studio specific files
+.vs/
+*.suo
+*.user
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Compiled binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build directories
+Debug/
+Release/
+x64/
+x86/
+
+# Dear ImGui specific files
+imgui.ini
+*.obj
+
+# GLFW specific files
+CMakeLists.txt.user
+
+# Other generated or temporary files
+*.log
+*.log.*
+*.tmp
+*.tmp.*
+*.pdb
+*.ilk
+*.log
+*.log.*
+*.opendb
+
+# Ignore Visual Studio Code specific files if using
+.vscode/
