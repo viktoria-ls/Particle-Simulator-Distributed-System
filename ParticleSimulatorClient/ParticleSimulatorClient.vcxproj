@@ -149,7 +149,7 @@
     <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_tables.cpp" />
     <ClCompile Include="C:\Users\Leela\Desktop\imgui\imgui_widgets.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Temp.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\Users\Leela\Desktop\imgui\imconfig.h" />
