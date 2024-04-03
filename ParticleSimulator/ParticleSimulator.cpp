@@ -36,33 +36,41 @@ Sprite user = { 20, 20 };
 // NOTES: Arbitrarily divided by 4.5 because it looks like it matches the backend, wats up with that tho
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		user.y -= userVelocity / 4.5;
+		user.y -= userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		user.x -= userVelocity / 4.5;
+		user.x -= userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		user.y += userVelocity / 4.5;
+		user.y += userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		user.x += userVelocity / 4.5;
+		user.x += userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 }
 
 static void drawElements(std::vector<Sprite>& particles) {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	//Translation Vector
+	double xVector = 148.5 - user.x;
+	double yVector = 85.5 - user.y;
 
-	double clientUserX = frameWidth / 2;
-	double clientUserY = frameHeight / 2;
+	double clientUserX = 1280 * ((148.5)/297);
+	double clientUserY = 720 * ((85.5)/171);
+
+	std::cout << "User at " << clientUserX << " and " << clientUserY << "\n";
 	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize / 2.0, IM_COL32_WHITE, 32);
 
 	for (int i = 0; i < particles.size(); i++) {
-		double translatedPX = clientUserX + ((particles[i].x - user.x) * (spriteSize / 2.0));
-		double translatedPY = clientUserY + ((particles[i].y - user.y) * (spriteSize / 2.0));
+		double translatedPX = particles[i].x + xVector;
+		double translatedPY = particles[i].y + yVector;
+
+		translatedPX = 1280 * (translatedPX / 297);
+		translatedPY = 720 * (translatedPY / 171);
 		/*double translatedPX = (clientUserX / user.x) * particles[0].x;
 		double translatedPY = (clientUserY / user.y) * particles[0].y;*/
 
@@ -82,22 +90,7 @@ int main()
 	// NOTES: (20, 20) and (22, 20) in client are side by side???????????
 	// NOTES: It takes 9 button presses to get to next col/row in both server and client
 	std::vector<Sprite> particles = {
-		Sprite(1.0, 1.0),
-		Sprite(user.x + 4, user.y),
-		Sprite(user.x + 6, user.y),
-		Sprite(user.x + 8, user.y),
-		Sprite(user.x + 10, user.y),
-		Sprite(user.x + 12, user.y),
-		Sprite(user.x + 14, user.y),
-		Sprite(user.x + 16, user.y),
-		Sprite(user.x + 18, user.y),
-		Sprite(user.x + 20, user.y),
-		Sprite(user.x + 22, user.y),
-		Sprite(user.x + 24, user.y),
-		Sprite(user.x + 26, user.y),
-		Sprite(user.x + 28, user.y),
-		Sprite(user.x + 30, user.y),
-		Sprite(user.x + 32, user.y),
+		Sprite(29, 20)
 	};
 	std::cout << "PX " << particles[0].x << "\n";
 	std::cout << "PY " << particles[0].y << "\n";

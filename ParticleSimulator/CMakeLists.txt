@@ -6,7 +6,7 @@ find_package(OpenGL REQUIRED)
 
 
 # Add source to this project's executable.
-add_executable (ParticleSimulator "ParticleSimulator.cpp" "glad.c")
+add_executable (ParticleSimulator "ParticleSimulator.cpp")
 
 target_include_directories(${PROJECT_NAME} PRIVATE
 	${PROJECT_SOURCE_DIR}/ParticleSimulator/imgui
@@ -26,6 +26,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/ParticleSimulator/imgui/imgui_impl_glfw.cpp
     ${PROJECT_SOURCE_DIR}/ParticleSimulator/imgui/imgui_impl_opengl3.cpp
     ${PROJECT_SOURCE_DIR}/ParticleSimulator/imgui/imgui_widgets.cpp
+    ${PROJECT_SOURCE_DIR}/ParticleSimulator/glad.c
 )
 message(${PROJECT_SOURCE_DIR}/ParticleSimulator/include)
 # TODO: Add tests and install targets if needed.
