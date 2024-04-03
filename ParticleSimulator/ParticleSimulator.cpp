@@ -1,17 +1,27 @@
+﻿// ParticleSimulator.cpp : Defines the entry point for the application.
+//
+
+#include "ParticleSimulator.h"
 #include"imgui.h"
 #include"imgui_impl_glfw.h"
 #include"imgui_impl_opengl3.h"
 
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
 #include<string>
 #include<vector>
-#include <algorithm>
+#include<algorithm>
 #include<iostream>
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
+
+
+using namespace std;
 
 struct Sprite {
-	double x = 400;
-	double y = 400;
+	double x;
+	double y;
+
+	Sprite(double x_val, double y_val) : x(x_val), y(y_val) {}
 };
 
 const double frameWidth = 1280;
@@ -20,7 +30,7 @@ const double frameHeight = 720;
 const double spriteSize = ((frameWidth / 33.0) + (frameHeight / 19.0)) / 2.0;
 
 const int userVelocity = 1;
-Sprite user = {20, 20};
+Sprite user = { 20, 20 };
 
 // TODO: Send updated user position to server and wait for updated particle list
 // NOTES: Arbitrarily divided by 4.5 because it looks like it matches the backend, wats up with that tho
@@ -43,12 +53,12 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	}
 }
 
-static void drawElements(std::vector<Sprite> &particles) {
+static void drawElements(std::vector<Sprite>& particles) {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 	double clientUserX = frameWidth / 2;
 	double clientUserY = frameHeight / 2;
-	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize/2.0, IM_COL32_WHITE, 32);
+	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize / 2.0, IM_COL32_WHITE, 32);
 
 	for (int i = 0; i < particles.size(); i++) {
 		double translatedPX = clientUserX + ((particles[i].x - user.x) * (spriteSize / 2.0));
@@ -64,7 +74,7 @@ static void drawElements(std::vector<Sprite> &particles) {
 
 }
 
-int main() 
+int main()
 {
 	// dummy particle list
 	// NOTES: I dont understand why this works in making 16 cols
@@ -72,7 +82,7 @@ int main()
 	// NOTES: (20, 20) and (22, 20) in client are side by side???????????
 	// NOTES: It takes 9 button presses to get to next col/row in both server and client
 	std::vector<Sprite> particles = {
-		Sprite(user.x + 2, user.y),
+		Sprite(1.0, 1.0),
 		Sprite(user.x + 4, user.y),
 		Sprite(user.x + 6, user.y),
 		Sprite(user.x + 8, user.y),
