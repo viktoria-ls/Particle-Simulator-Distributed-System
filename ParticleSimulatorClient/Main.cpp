@@ -20,24 +20,25 @@ const double frameHeight = 720;
 const double spriteSize = ((frameWidth / 33.0) + (frameHeight / 19.0)) / 2.0;
 
 const int userVelocity = 1;
-Sprite user = {60, 50};
+Sprite user = {20, 20};
 
 // TODO: Send updated user position to server and wait for updated particle list
+// NOTES: Arbitrarily divided by 4.5 because it looks like it matches the backend, wats up with that tho
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		user.y -= userVelocity;
+		user.y -= userVelocity / 4.5;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		user.x -= userVelocity;
+		user.x -= userVelocity / 4.5;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		user.y += userVelocity;
+		user.y += userVelocity / 4.5;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		user.x += userVelocity;
+		user.x += userVelocity / 4.5;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 }
@@ -50,10 +51,10 @@ static void drawElements(std::vector<Sprite> &particles) {
 	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize/2.0, IM_COL32_WHITE, 32);
 
 	for (int i = 0; i < particles.size(); i++) {
-		double translatedPX = clientUserX + ((particles[0].x - user.x) * (spriteSize / 2.0));
-		double translatedPY = clientUserY + ((particles[0].y - user.y) * (spriteSize / 2.0));
-		//double translatedPX = (clientUserX / user.x) * particles[0].x;
-		//double translatedPY = (clientUserY / user.y) * particles[0].y;
+		double translatedPX = clientUserX + ((particles[i].x - user.x) * (spriteSize / 2.0));
+		double translatedPY = clientUserY + ((particles[i].y - user.y) * (spriteSize / 2.0));
+		/*double translatedPX = (clientUserX / user.x) * particles[0].x;
+		double translatedPY = (clientUserY / user.y) * particles[0].y;*/
 
 		/*std::cout << i << " " << translatedPX << "\n";
 		std::cout << i << " " << translatedPY << "\n";*/
@@ -61,31 +62,35 @@ static void drawElements(std::vector<Sprite> &particles) {
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
 	}
 
-	//std::cout << "gorp\n";
-	//std::cout << user.x << "\n";
-	//std::cout << user.y << "\n";
-	//std::cout << translatedPX << "\n";
-	//std::cout << translatedPY << "\n";
-
 }
 
-int main()
+int main() 
 {
 	// dummy particle list
+	// NOTES: I dont understand why this works in making 16 cols
+	// NOTES: (20, 20) and (29, 20) in backend are side by side
+	// NOTES: (20, 20) and (22, 20) in client are side by side???????????
+	// NOTES: It takes 9 button presses to get to next col/row in both server and client
 	std::vector<Sprite> particles = {
-		Sprite(user.x + spriteSize, user.y)
+		Sprite(user.x + 2, user.y),
+		Sprite(user.x + 4, user.y),
+		Sprite(user.x + 6, user.y),
+		Sprite(user.x + 8, user.y),
+		Sprite(user.x + 10, user.y),
+		Sprite(user.x + 12, user.y),
+		Sprite(user.x + 14, user.y),
+		Sprite(user.x + 16, user.y),
+		Sprite(user.x + 18, user.y),
+		Sprite(user.x + 20, user.y),
+		Sprite(user.x + 22, user.y),
+		Sprite(user.x + 24, user.y),
+		Sprite(user.x + 26, user.y),
+		Sprite(user.x + 28, user.y),
+		Sprite(user.x + 30, user.y),
+		Sprite(user.x + 32, user.y),
 	};
-	std::cout << "spriteX " << particles[0].x << "\n";
-	std::cout << "spriteY" << particles[0].y << "\n";
-	//particles[0] = {user.x, user.y + 5};
-	//particles[1] = { user.x, user.y + spriteSize * 2 };
-	//particles[2] = { user.x, user.y + spriteSize * 3 };
-	//particles[3] = { user.x, user.y + spriteSize * 4 };
-	//particles[4] = { user.x, user.y + spriteSize * 5 };
-	//particles[5] = { user.x, user.y + spriteSize * 6 };
-	//particles[6] = { user.x, user.y + spriteSize * 7 };
-	//particles[7] = { user.x, user.y + spriteSize * 8 };
-	//particles[8] = { user.x, user.y + spriteSize * 9 };
+	std::cout << "PX " << particles[0].x << "\n";
+	std::cout << "PY " << particles[0].y << "\n";
 
 	// Initialize GLFW
 	glfwInit();
