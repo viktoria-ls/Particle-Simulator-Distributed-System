@@ -14,52 +14,49 @@ struct Sprite {
 	double y = 400;
 };
 
-const int windowWidth = 800;
-const int windowHeight = 800;
-
 const double frameWidth = 1280;
 const double frameHeight = 720;
 
-const double spriteSize = std::min((frameWidth / 33.0), (frameHeight / 19.0));
+const double spriteSize = ((frameWidth / 33.0) + (frameHeight / 19.0)) / 2.0;
 
 const int userVelocity = 1;
 Sprite user = {60, 50};
 
-// TODO: Send direction (and speed?) to server so it can 
+// TODO: Send updated user position to server and wait for updated particle list
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		std::cout << "Pressed W";
 		user.y -= userVelocity;
+		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		std::cout << "Pressed A";
 		user.x -= userVelocity;
+		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		std::cout << "Pressed S";
 		user.y += userVelocity;
+		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		std::cout << "Pressed D";
 		user.x += userVelocity;
+		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 }
 
-static void drawElements(std::vector<Sprite> &particles, float frameWindowWidth, float frameWindowHeight) {
+static void drawElements(std::vector<Sprite> &particles) {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-	double clientUserX = frameWindowWidth + (frameWidth / 2);
-	double clientUserY = frameWindowHeight + (frameHeight / 2);
+	double clientUserX = frameWidth / 2;
+	double clientUserY = frameHeight / 2;
 	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize/2.0, IM_COL32_WHITE, 32);
 
 	for (int i = 0; i < particles.size(); i++) {
-		/*double translatedPX = clientUserX + ((particles[0].x - user.x) * spriteSize / 2.0);
-	double translatedPY = clientUserY + ((particles[0].y - user.y) * spriteSize / 2.0);*/
-	double translatedPX = (clientUserX / user.x) * particles[0].x;
-	double translatedPY = (clientUserY / user.y) * particles[0].y;
+		double translatedPX = clientUserX + ((particles[0].x - user.x) * (spriteSize / 2.0));
+		double translatedPY = clientUserY + ((particles[0].y - user.y) * (spriteSize / 2.0));
+		//double translatedPX = (clientUserX / user.x) * particles[0].x;
+		//double translatedPY = (clientUserY / user.y) * particles[0].y;
 
-		std::cout << i << " " << translatedPX << "\n";
-		std::cout << i << " " << translatedPY << "\n";
+		/*std::cout << i << " " << translatedPX << "\n";
+		std::cout << i << " " << translatedPY << "\n";*/
 
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
 	}
@@ -75,16 +72,20 @@ static void drawElements(std::vector<Sprite> &particles, float frameWindowWidth,
 int main()
 {
 	// dummy particle list
-	std::vector<Sprite> particles = {Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite(), Sprite() };
-	particles[0] = {user.x, user.y + 5};
-	particles[1] = { user.x, user.y + spriteSize * 2 };
-	particles[2] = { user.x, user.y + spriteSize * 3 };
-	particles[3] = { user.x, user.y + spriteSize * 4 };
-	particles[4] = { user.x, user.y + spriteSize * 5 };
-	particles[5] = { user.x, user.y + spriteSize * 6 };
-	particles[6] = { user.x, user.y + spriteSize * 7 };
-	particles[7] = { user.x, user.y + spriteSize * 8 };
-	particles[8] = { user.x, user.y + spriteSize * 9 };
+	std::vector<Sprite> particles = {
+		Sprite(user.x + spriteSize, user.y)
+	};
+	std::cout << "spriteX " << particles[0].x << "\n";
+	std::cout << "spriteY" << particles[0].y << "\n";
+	//particles[0] = {user.x, user.y + 5};
+	//particles[1] = { user.x, user.y + spriteSize * 2 };
+	//particles[2] = { user.x, user.y + spriteSize * 3 };
+	//particles[3] = { user.x, user.y + spriteSize * 4 };
+	//particles[4] = { user.x, user.y + spriteSize * 5 };
+	//particles[5] = { user.x, user.y + spriteSize * 6 };
+	//particles[6] = { user.x, user.y + spriteSize * 7 };
+	//particles[7] = { user.x, user.y + spriteSize * 8 };
+	//particles[8] = { user.x, user.y + spriteSize * 9 };
 
 	// Initialize GLFW
 	glfwInit();
@@ -92,9 +93,8 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Particle Simulator Client", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(frameWidth, frameHeight, "Particle Simulator Client", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -107,7 +107,7 @@ int main()
 
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
-	glViewport(0, 0, windowWidth, windowHeight);
+	glViewport(0, 0, frameWidth, frameHeight);
 
 	// ImGui init
 	IMGUI_CHECKVERSION();
@@ -130,19 +130,13 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// Calculate position for the center of the main window and imgui window
-		float mainWindowCenterX = ImGui::GetIO().DisplaySize.x / 2.0f;
-		float mainWindowCenterY = ImGui::GetIO().DisplaySize.y / 2.0f;
-		float windowInFrameCenterX = mainWindowCenterX - (frameWidth / 2.0f);
-		float windowInFrameCenterY = mainWindowCenterY - (frameHeight / 2.0f);
-
 		// ImGUI window creation
-		ImGui::SetNextWindowPos(ImVec2(windowInFrameCenterX, windowInFrameCenterY));
+		ImGui::SetNextWindowPos(ImVec2(0.0, 0.0));
 		ImGui::SetNextWindowSize(ImVec2(frameWidth, frameHeight));
 
 		ImGui::Begin("Title", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 		ImGui::Text("Current FPS: %.3f", io.Framerate);
-		drawElements(particles, windowInFrameCenterX, windowInFrameCenterY);
+		drawElements(particles);
 		ImGui::End();
 
 		// Renders the ImGUI elements
