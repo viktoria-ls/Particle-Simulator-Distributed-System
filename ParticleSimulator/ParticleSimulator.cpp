@@ -58,17 +58,19 @@ std::string returnJSON(const std::string& receivedData) {
 }
 
 void parseJSON(const std::string& jsonString) {
-	json data = json::parse(jsonString);
+	cout << "JSON STRING = " << jsonString.compare("finish") << "\n";
+	if (jsonString.compare("finish") == 0)
+		;
+	else {
+		json data = json::parse(jsonString);
 
-	double x = data["x"];
-	double y = data["y"];
+		double x = data["x"];
+		double y = data["y"];
 
-	particles.push_back(Sprite(x, 720 - y - 9));
-
-	if (jsonString.compare("finish"))
-		std::cout << "finish\n" << std::endl;
-	else
+		particles.push_back(Sprite(x, 720 - y - 9));
 		std::cout << "x: " << x << ", y: " << y << "\n" << std::endl;
+	}
+		
 }
 
 void listenToServer(SOCKET socket) {
@@ -116,11 +118,8 @@ void listenToServer(SOCKET socket) {
 			totalBytes += bytesReceived;
 		}
 
-		cout << "Testing: " << msg << "\n\n";
-		// Process received data
-		/*std::string msg(buffer, bytesReceived);
 		std::string receivedJSON = returnJSON(msg);
-		parseJSON(receivedJSON);*/
+		parseJSON(receivedJSON);
 	}
 }
 

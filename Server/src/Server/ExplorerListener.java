@@ -16,7 +16,10 @@ public class ExplorerListener extends Thread {
     }
 
     public void run() {
-        this.send();
+        while(true) {
+            send();
+            sendFinishFlag();
+        }
     }
 
     public void send() {
@@ -33,7 +36,8 @@ public class ExplorerListener extends Thread {
 
     public void sendFinishFlag() {
         try {
-            outputStream.writeInt(-1);
+            outputStream.writeInt("finish".length());
+            outputStream.writeUTF("finish");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
