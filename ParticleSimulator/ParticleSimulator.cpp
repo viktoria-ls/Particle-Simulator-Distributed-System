@@ -59,7 +59,7 @@ std::string returnJSON(const std::string& receivedData) {
 
 void parseJSON(const std::string& jsonString, SOCKET socket) {
 	if (jsonString.compare("finish") == 0) {
-
+		particles.clear();
 		DOUBLE tempx = user.x >= 1271 ? 1271 : user.x;
 		DOUBLE tempy = 711 - user.y >= 711 ? 711 : 711 - user.y;
 
@@ -105,7 +105,7 @@ void listenToServer(SOCKET socket) {
 		std::string msg;
 
 		while (totalBytes < lengthPrefix) {
-			
+
 			bytesReceived = recv(socket, buffer, lengthPrefix - totalBytes, 0);
 
 			cout << "Total Bytes = " << totalBytes << " Bytes Receieved = " << bytesReceived << "\n\n";
