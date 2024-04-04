@@ -13,6 +13,7 @@
 #include<vector>
 #include<algorithm>
 #include<iostream>
+#include <cmath>
 
 
 using namespace std;
@@ -30,27 +31,40 @@ const double frameHeight = 720;
 const double spriteSize = ((frameWidth / 33.0) + (frameHeight / 19.0)) / 2.0;
 
 const int userVelocity = 1;
-Sprite user = { 20, 20 };
+Sprite user = { 1280, 720 };
 
 // TODO: Send updated user position to server and wait for updated particle list
-// NOTES: Arbitrarily divided by 4.5 because it looks like it matches the backend, wats up with that tho
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		user.y -= userVelocity;
+		if (user.y + userVelocity > 720)
+			user.y = 720.0;
+		else
+			user.y += userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-		user.x -= userVelocity;
+		if (user.x - userVelocity < 0)
+			user.x = 0.00;
+		else
+			user.x -= userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		user.y += userVelocity;
+		if (user.y - userVelocity < 0)
+			user.y = 0.0;
+		else
+			user.y -= userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		user.x += userVelocity;
+		if (user.x + userVelocity > 128)
+			user.x = 1280.00;
+		else
+			user.x += userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
 	}
+
+	
 }
 
 static void drawElements(std::vector<Sprite>& particles) {
@@ -62,7 +76,6 @@ static void drawElements(std::vector<Sprite>& particles) {
 	double clientUserX = 1280 * ((148.5)/297);
 	double clientUserY = 720 * ((85.5)/171);
 
-	std::cout << "User at " << clientUserX << " and " << clientUserY << "\n";
 	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize / 2.0, IM_COL32_WHITE, 32);
 
 	for (int i = 0; i < particles.size(); i++) {
@@ -70,27 +83,27 @@ static void drawElements(std::vector<Sprite>& particles) {
 		double translatedPY = particles[i].y + yVector;
 
 		translatedPX = 1280 * (translatedPX / 297);
-		translatedPY = 720 * (translatedPY / 171);
-		/*double translatedPX = (clientUserX / user.x) * particles[0].x;
-		double translatedPY = (clientUserY / user.y) * particles[0].y;*/
-
-		/*std::cout << i << " " << translatedPX << "\n";
-		std::cout << i << " " << translatedPY << "\n";*/
+		translatedPY = 720 - (720 * (translatedPY / 171));
 
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
 	}
 
+	ImVec2 topBorderEndPoint = ImVec2(1280, 360 - spriteSize / 2.0 - 720 + user.y);
+	ImVec2 leftBorderEndPoint = ImVec2(640 - spriteSize / 2.0 - user.x, 720);
+	ImVec2 bottomBorderEndPoint = ImVec2(0, 360 + spriteSize / 2.0 + user.y);
+	ImVec2 rightBorderEndPoint = ImVec2(640 + spriteSize / 2.0 + (1280 - user.x), 0);
+	
+	drawList->AddRectFilled(ImVec2(0, 0), topBorderEndPoint, IM_COL32(0, 0, 500, 255));				// Draws top border
+	drawList->AddRectFilled(ImVec2(0, 0), leftBorderEndPoint, IM_COL32(0, 0, 500, 255));			// Draws left border
+	drawList->AddRectFilled(ImVec2(1280, 720), bottomBorderEndPoint, IM_COL32(0, 0, 500, 255));		// Draws bottom border
+	drawList->AddRectFilled(ImVec2(1280, 720), rightBorderEndPoint, IM_COL32(0, 0, 500, 255));		// Draws right border
 }
 
 int main()
 {
 	// dummy particle list
-	// NOTES: I dont understand why this works in making 16 cols
-	// NOTES: (20, 20) and (29, 20) in backend are side by side
-	// NOTES: (20, 20) and (22, 20) in client are side by side???????????
-	// NOTES: It takes 9 button presses to get to next col/row in both server and client
 	std::vector<Sprite> particles = {
-		Sprite(29, 20)
+		Sprite(20, 700)
 	};
 	std::cout << "PX " << particles[0].x << "\n";
 	std::cout << "PY " << particles[0].y << "\n";
