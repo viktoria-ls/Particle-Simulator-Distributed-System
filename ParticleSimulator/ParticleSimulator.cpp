@@ -15,6 +15,15 @@
 #include<iostream>
 #include <cmath>
 
+#include <thread>
+#include <WinSock2.h>
+#include <ws2tcpip.h> // For sockaddr_in
+#include "json.hpp"
+
+using json = nlohmann::json;
+
+#pragma comment(lib, "ws2_32.lib") // <- This doesn't compile properly even with this
+
 
 using namespace std;
 
@@ -31,7 +40,54 @@ const double frameHeight = 720;
 const double spriteSize = ((frameWidth / 33.0) + (frameHeight / 19.0)) / 2.0;
 
 const int userVelocity = 1;
-Sprite user = { 1280, 720 };
+Sprite user = { 0, 0 };
+
+std::vector<Sprite> particles = {
+	Sprite(9, 0)
+};
+
+std::string returnJSON(const std::string& receivedData) {
+	size_t startPos = receivedData.find('{'); // Find the position of the opening brace
+	size_t endPos = receivedData.rfind('}'); // Find the position of the closing brace
+	if (startPos != std::string::npos && endPos != std::string::npos && startPos < endPos) {
+		return receivedData.substr(startPos, endPos - startPos + 1); // Extract the JSON substring
+	}
+	else {
+		return ""; // JSON substring not found or invalid
+	}
+}
+
+void parseJSON(const std::string& jsonString) {
+	json data = json::parse(jsonString);
+
+	double x = data["x"];
+	double y = data["y"];
+
+	particles.push_back(Sprite(x, 720 - y - 9));
+
+	std::cout << "x: " << x << ", y: " << y << std::endl;
+}
+
+void listenToServer(SOCKET socket) {
+	char buffer[1024];
+	while (true) {
+		int bytesReceived = recv(socket, buffer, sizeof(buffer), 0);
+		if (bytesReceived == SOCKET_ERROR) {
+			std::cerr << "Error receiving data from server" << std::endl;
+			break;
+		}
+		else if (bytesReceived == 0) {
+			std::cerr << "Connection closed by server" << std::endl;
+			break;
+		}
+		else {
+			// Process received data
+			std::string msg(buffer, bytesReceived);
+			std::string receivedJSON = returnJSON(msg);
+			parseJSON(receivedJSON);
+		}
+	}
+}
 
 // TODO: Send updated user position to server and wait for updated particle list
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -101,10 +157,35 @@ static void drawElements(std::vector<Sprite>& particles) {
 
 int main()
 {
+	// Socket connection setup
+	WSADATA wsaData;
+	int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (result != 0) {
+		std::cerr << "WSAStartup failed with error: " << result << std::endl;
+		return 1;
+	}
+
+	std::cout << "Hello, World!" << std::endl;
+	SOCKET mySocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	sockaddr_in serverAddr;
+
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(1337);
+	inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
+
+	if (connect(mySocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) != SOCKET_ERROR) {
+		std::cout << "Connected" << std::endl;
+	}
+	else {
+		int error = WSAGetLastError();
+		std::cerr << "Error: Connect failed with error code " << error << std::endl;
+	}
+
+	std::thread listenerThread(listenToServer, mySocket);
+
 	// dummy particle list
-	std::vector<Sprite> particles = {
-		Sprite(20, 700)
-	};
+	
 	std::cout << "PX " << particles[0].x << "\n";
 	std::cout << "PY " << particles[0].y << "\n";
 
@@ -170,6 +251,8 @@ int main()
 		// Take care of all GLFW events
 		glfwPollEvents();
 	}
+
+	listenerThread.join();
 
 	// Deletes all ImGUI instances
 	ImGui_ImplOpenGL3_Shutdown();
