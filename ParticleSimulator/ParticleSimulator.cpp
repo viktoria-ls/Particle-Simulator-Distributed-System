@@ -216,6 +216,14 @@ int main()
 		std::cerr << "Error: Connect failed with error code " << error << std::endl;
 	}
 
+	// Convert Sprite object to JSON string
+	string jsonStr = "{\"x\":" + to_string(user.x) + ", \"y\":" + to_string(user.y) + "}";
+
+	// Send JSON to server
+	send(mySocket, jsonStr.c_str(), jsonStr.length(), 0);
+
+	cout << "JSON sent to server" << endl;
+
 	std::thread listenerThread(listenToServer, mySocket);
 
 	// dummy particle list

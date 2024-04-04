@@ -1,5 +1,6 @@
 package Server;
 
+import org.json.JSONObject;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -55,6 +56,13 @@ class ExplorerAcceptThread extends Thread {
     
                 DataInputStream tempInStream = new DataInputStream(temp.getInputStream());
                 DataOutputStream tempOutStream = new DataOutputStream(temp.getOutputStream());
+
+                byte[] buffer = new byte[1024];
+                // Read data from client
+                int bytesRead = tempInStream.read(buffer);
+                String receivedData = new String(buffer, 0, bytesRead);
+
+                System.out.println(receivedData);
     
                 Main.explorerListeners.add(new ExplorerListener(tempInStream, tempOutStream));
 
