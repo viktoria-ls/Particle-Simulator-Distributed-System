@@ -5,12 +5,20 @@ public class Particle {
     Double y;
     Double velocity;
     Double angle;
+    String type;
 
     Particle(Double x, Double y, Double velocity, Double angle) {
         this.x = x;
         this.y = y;
         this.velocity = velocity;
         this.angle = angle;
+        this.type = "normal";
+    }
+
+    Particle(Double x, Double y, String type) {
+        this.x = x;
+        this.y = y;
+        this.type = type;
     }
 
     public void moveParticle(Double nx, Double ny) {

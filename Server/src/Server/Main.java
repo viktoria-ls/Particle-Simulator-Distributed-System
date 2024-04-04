@@ -62,9 +62,27 @@ class ExplorerAcceptThread extends Thread {
                 int bytesRead = tempInStream.read(buffer);
                 String receivedData = new String(buffer, 0, bytesRead);
 
-                System.out.println(receivedData);
-    
-                Main.explorerListeners.add(new ExplorerListener(tempInStream, tempOutStream));
+
+                JSONObject json = new JSONObject(receivedData);
+
+                Double tempx = json.getDouble("x");
+                Double tempy =  json.getDouble("y");
+
+                if(tempy >= 711) {
+                    tempx = 711.0;
+                }
+                if(tempx >= 1271) {
+                    tempy = 1271.0;
+                }
+
+                System.out.println("inital");
+                System.out.println(tempx);
+                System.out.println(tempy);
+
+                Particle tempParticle = new Particle(tempx, tempy, "explorer");
+
+                ParticleArea.explorerList.add(tempParticle);
+                Main.explorerListeners.add(new ExplorerListener(tempInStream, tempOutStream, tempParticle));
 
                 Main.explorerListeners.get(Main.explorerListeners.size() - 1).start();
             } catch (IOException e) {

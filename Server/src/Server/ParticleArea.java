@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ParticleArea extends JPanel {
     static CopyOnWriteArrayList<Particle> particleList = new CopyOnWriteArrayList<>();
+    static CopyOnWriteArrayList<Particle> explorerList = new CopyOnWriteArrayList<>();
     int THREAD_COUNT = 8;
     ArrayList<Thread> drawThreadList = new ArrayList<>();
 
@@ -53,24 +54,21 @@ public class ParticleArea extends JPanel {
             scaleY = 1.0;
         }
 
-
-
         g2d.setColor(Color.BLACK);
         g2d.fillRect(-144, -81, 144, 850);
         g2d.fillRect(1280, -81, 144, 850);
         g2d.fillRect(-144, -81, 1280 + 144, 81);
         g2d.fillRect(-144, 720, 1280 + 144, 81);
 
-
         if(user != null) {
             g2d.setColor(Color.green);
             g2d.fillOval(user.x.intValue(), user.y.intValue(), ovalSize, ovalSize);
         }
 
-
-
-
-
+        for(Particle p : explorerList) {
+            g2d.setColor(Color.red);
+            g2d.fillOval(p.x.intValue(), p.y.intValue(), ovalSize, ovalSize);
+        }
 
         int size = particleList.size();
         if(size > 0) {
@@ -104,8 +102,6 @@ public class ParticleArea extends JPanel {
                     e.printStackTrace();
                 }
             }
-
-
 
             RenderRunnable.frames++;
 

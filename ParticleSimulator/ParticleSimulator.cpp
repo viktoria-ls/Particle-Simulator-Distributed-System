@@ -57,10 +57,18 @@ std::string returnJSON(const std::string& receivedData) {
 	}
 }
 
-void parseJSON(const std::string& jsonString) {
-	cout << "JSON STRING = " << jsonString.compare("finish") << "\n";
-	if (jsonString.compare("finish") == 0)
-		;
+void parseJSON(const std::string& jsonString, SOCKET socket) {
+	if (jsonString.compare("finish") == 0) {
+
+		DOUBLE tempx = user.x >= 1271 ? 1271 : user.x;
+		DOUBLE tempy = 711 - user.y >= 711 ? 711 : 711 - user.y;
+
+		// Convert Sprite object to JSON string
+		string jsonStr = "{\"x\":" + to_string(tempx) + ", \"y\":" + to_string(tempy) + "}";
+
+		// Send JSON to server
+		send(socket, jsonStr.c_str(), jsonStr.length(), 0);
+	}
 	else {
 		json data = json::parse(jsonString);
 
@@ -68,9 +76,7 @@ void parseJSON(const std::string& jsonString) {
 		double y = data["y"];
 
 		particles.push_back(Sprite(x, 720 - y - 9));
-		std::cout << "x: " << x << ", y: " << y << "\n" << std::endl;
 	}
-		
 }
 
 void listenToServer(SOCKET socket) {
@@ -119,15 +125,15 @@ void listenToServer(SOCKET socket) {
 		}
 
 		std::string receivedJSON = returnJSON(msg);
-		parseJSON(receivedJSON);
+		parseJSON(receivedJSON, socket);
 	}
 }
 
 // TODO: Send updated user position to server and wait for updated particle list
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		if (user.y + userVelocity > 720)
-			user.y = 720.0;
+		if (user.y + userVelocity >= 711)
+			user.y = 711.0;
 		else
 			user.y += userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << -379.25 + (4 * (720 - user.y)) << " " << user.y << "\n";
@@ -147,8 +153,8 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 		std::cout << "Updated User Pos: " << user.x << " " << -379.25 + (4 * (720 - user.y)) << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		if (user.x + userVelocity > 1280)
-			user.x = 1280.00;
+		if (user.x + userVelocity >+ 1271)
+			user.x = 1271.00;
 		else
 			user.x += userVelocity;
 		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
@@ -178,7 +184,7 @@ static void drawElements(std::vector<Sprite>& particles) {
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
 	}
 
-	ImVec2 topBorderEndPoint = ImVec2(1280, -379.25 + user.y - (3.2 * (720 - user.y))); 
+	ImVec2 topBorderEndPoint = ImVec2(1271, -379.25 + user.y - (3.2 * (720 - user.y))); 
 	ImVec2 leftBorderEndPoint = ImVec2(620.75 - user.x - (3.3 * (user.x)), 720);
 	ImVec2 bottomBorderEndPoint = ImVec2(0, 379.25 - user.y + (5.2 * (user.y)));
 	ImVec2 rightBorderEndPoint = ImVec2(-620.75 + user.x + (5.3 * (1280 - user.x)), 0);
@@ -216,13 +222,20 @@ int main()
 		std::cerr << "Error: Connect failed with error code " << error << std::endl;
 	}
 
-	// Convert Sprite object to JSON string
-	string jsonStr = "{\"x\":" + to_string(user.x) + ", \"y\":" + to_string(user.y) + "}";
+	DOUBLE tempx = user.x;
+	DOUBLE tempy = 711 - user.y;
 
+	if (tempx >= 1271)
+		tempx = 1271;
+	if (tempy >= 711)
+		tempy = 711;
+
+	// Convert Sprite object to JSON string
+	string jsonStr = "{\"x\":" + to_string(tempx) + ", \"y\":" + to_string(tempy) + "}";
+
+	cout << jsonStr;
 	// Send JSON to server
 	send(mySocket, jsonStr.c_str(), jsonStr.length(), 0);
-
-	cout << "JSON sent to server" << endl;
 
 	std::thread listenerThread(listenToServer, mySocket);
 
