@@ -53,7 +53,7 @@ std::string returnJSON(const std::string& receivedData) {
 		return receivedData.substr(startPos, endPos - startPos + 1); // Extract the JSON substring
 	}
 	else {
-		return ""; // JSON substring not found or invalid
+		return "finish"; // JSON substring not found or invalid
 	}
 }
 
@@ -65,13 +65,20 @@ void parseJSON(const std::string& jsonString) {
 
 	particles.push_back(Sprite(x, 720 - y - 9));
 
-	std::cout << "x: " << x << ", y: " << y << std::endl;
+	if (jsonString.compare("finish"))
+		std::cout << "finish\n" << std::endl;
+	else
+		std::cout << "x: " << x << ", y: " << y << "\n" << std::endl;
 }
 
 void listenToServer(SOCKET socket) {
 	char buffer[1024];
 	while (true) {
-		int bytesReceived = recv(socket, buffer, sizeof(buffer), 0);
+		short lengthPrefix;
+		int bytesReceived = recv(socket, reinterpret_cast<char*>(&lengthPrefix), sizeof(lengthPrefix), 0);
+
+		
+
 		if (bytesReceived == SOCKET_ERROR) {
 			std::cerr << "Error receiving data from server" << std::endl;
 			break;
@@ -80,12 +87,35 @@ void listenToServer(SOCKET socket) {
 			std::cerr << "Connection closed by server" << std::endl;
 			break;
 		}
-		else {
-			// Process received data
-			std::string msg(buffer, bytesReceived);
-			std::string receivedJSON = returnJSON(msg);
-			parseJSON(receivedJSON);
+
+		lengthPrefix = ntohl(lengthPrefix);
+		cout << lengthPrefix << "\n\n";
+
+		int totalBytes = 0;
+		std::string msg;
+
+		while (totalBytes < lengthPrefix) {
+			
+			bytesReceived = recv(socket, buffer, lengthPrefix, 0);
+
+			cout << "Total Bytes = " << totalBytes << " Bytes Receieved = " << bytesReceived << "\n\n";
+			if (bytesReceived == SOCKET_ERROR) {
+				std::cerr << "Error receiving data from server" << std::endl;
+				break;
+			}
+			if (bytesReceived == 0) {
+				std::cerr << "Connection closed by server" << std::endl;
+				break;
+			}
+			msg.append(buffer, bytesReceived);
+			totalBytes += bytesReceived;
 		}
+
+		cout << "Testing: " << msg << "\n\n";
+		// Process received data
+		/*std::string msg(buffer, bytesReceived);
+		std::string receivedJSON = returnJSON(msg);
+		parseJSON(receivedJSON);*/
 	}
 }
 
