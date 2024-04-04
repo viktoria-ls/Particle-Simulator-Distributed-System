@@ -74,10 +74,8 @@ void parseJSON(const std::string& jsonString) {
 void listenToServer(SOCKET socket) {
 	char buffer[1024];
 	while (true) {
-		short lengthPrefix;
+		int lengthPrefix;
 		int bytesReceived = recv(socket, reinterpret_cast<char*>(&lengthPrefix), sizeof(lengthPrefix), 0);
-
-		
 
 		if (bytesReceived == SOCKET_ERROR) {
 			std::cerr << "Error receiving data from server" << std::endl;
@@ -89,6 +87,10 @@ void listenToServer(SOCKET socket) {
 		}
 
 		lengthPrefix = ntohl(lengthPrefix);
+
+		lengthPrefix += 2;
+
+
 		cout << lengthPrefix << "\n\n";
 
 		int totalBytes = 0;
@@ -96,7 +98,7 @@ void listenToServer(SOCKET socket) {
 
 		while (totalBytes < lengthPrefix) {
 			
-			bytesReceived = recv(socket, buffer, lengthPrefix, 0);
+			bytesReceived = recv(socket, buffer, lengthPrefix - totalBytes, 0);
 
 			cout << "Total Bytes = " << totalBytes << " Bytes Receieved = " << bytesReceived << "\n\n";
 			if (bytesReceived == SOCKET_ERROR) {
@@ -107,7 +109,10 @@ void listenToServer(SOCKET socket) {
 				std::cerr << "Connection closed by server" << std::endl;
 				break;
 			}
-			msg.append(buffer, bytesReceived);
+
+			int startIndex = (totalBytes == 0) ? 2 : 0;
+
+			msg.append(buffer + startIndex, bytesReceived - startIndex);
 			totalBytes += bytesReceived;
 		}
 

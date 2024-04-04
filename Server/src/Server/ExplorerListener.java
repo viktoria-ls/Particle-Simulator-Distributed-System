@@ -22,7 +22,9 @@ public class ExplorerListener extends Thread {
     public void send() {
         ParticleArea.particleList.forEach(p -> {
             try {
-                outputStream.writeUTF(p.getJSON());
+                String test = p.getJSON();
+                outputStream.writeInt(test.length());
+                outputStream.writeUTF(test);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
