@@ -96,7 +96,7 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 			user.y = 720.0;
 		else
 			user.y += userVelocity;
-		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
+		std::cout << "Updated User Pos: " << user.x << " " << -379.25 + (4 * (720 - user.y)) << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_PRESS) {
 		if (user.x - userVelocity < 0)
@@ -110,10 +110,10 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 			user.y = 0.0;
 		else
 			user.y -= userVelocity;
-		std::cout << "Updated User Pos: " << user.x << " " << user.y << "\n";
+		std::cout << "Updated User Pos: " << user.x << " " << -379.25 + (4 * (720 - user.y)) << " " << user.y << "\n";
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-		if (user.x + userVelocity > 128)
+		if (user.x + userVelocity > 1280)
 			user.x = 1280.00;
 		else
 			user.x += userVelocity;
@@ -144,10 +144,10 @@ static void drawElements(std::vector<Sprite>& particles) {
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
 	}
 
-	ImVec2 topBorderEndPoint = ImVec2(1280, 360 - spriteSize / 2.0 - 720 + user.y);
-	ImVec2 leftBorderEndPoint = ImVec2(640 - spriteSize / 2.0 - user.x, 720);
-	ImVec2 bottomBorderEndPoint = ImVec2(0, 360 + spriteSize / 2.0 + user.y);
-	ImVec2 rightBorderEndPoint = ImVec2(640 + spriteSize / 2.0 + (1280 - user.x), 0);
+	ImVec2 topBorderEndPoint = ImVec2(1280, -379.25 + user.y - (3.2 * (720 - user.y))); 
+	ImVec2 leftBorderEndPoint = ImVec2(620.75 - user.x - (3.3 * (user.x)), 720);
+	ImVec2 bottomBorderEndPoint = ImVec2(0, 379.25 - user.y + (5.2 * (user.y)));
+	ImVec2 rightBorderEndPoint = ImVec2(-620.75 + user.x + (5.3 * (1280 - user.x)), 0);
 	
 	drawList->AddRectFilled(ImVec2(0, 0), topBorderEndPoint, IM_COL32(0, 0, 500, 255));				// Draws top border
 	drawList->AddRectFilled(ImVec2(0, 0), leftBorderEndPoint, IM_COL32(0, 0, 500, 255));			// Draws left border
