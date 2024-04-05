@@ -94,21 +94,6 @@ public class Controller {
             }
         });
 
-        MainLayout.modeButton.addActionListener(e -> {
-            switch (SIM_MODE) {
-                case EXPLORER -> {
-                    SIM_MODE = ModeType.DEVELOPER;
-                    MainLayout.modeButton.setText("Go to Explorer Mode");
-                    MainLayout.modeText.setText("DEVELOPER MODE");
-                } case DEVELOPER -> {
-                    SIM_MODE = ModeType.EXPLORER;
-                    MainLayout.modeButton.setText("Go to Developer Mode");
-                    MainLayout.modeText.setText("EXPLORER MODE");
-
-                    Main.commandQueue.add(new Command());
-                }
-            }
-        });
 
         MainLayout.pointPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("pressed W"), "pressedW");
         MainLayout.pointPanel.getActionMap().put("pressedW", new AbstractAction() {

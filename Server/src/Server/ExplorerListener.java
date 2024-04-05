@@ -68,7 +68,6 @@ public class ExplorerListener extends Thread {
 
         ParticleArea.explorerList.forEach(e -> {
             try {
-
                 String eJson = e.getJSON();
                 outputStream.writeInt(eJson.length());
                 outputStream.writeUTF(eJson);
@@ -83,7 +82,6 @@ public class ExplorerListener extends Thread {
             outputStream.writeInt("finish".length());
             outputStream.writeUTF("finish");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
