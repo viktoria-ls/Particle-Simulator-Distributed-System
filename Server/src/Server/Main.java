@@ -75,9 +75,6 @@ class ExplorerAcceptThread extends Thread {
                     tempy = 1271.0;
                 }
 
-                System.out.println("inital");
-                System.out.println(tempx);
-                System.out.println(tempy);
 
                 ParticleArea.explorerIDSem.acquire();
                 Particle tempParticle = new Particle(tempx, tempy, "explorer", ParticleArea.currExplorerID);
@@ -85,7 +82,6 @@ class ExplorerAcceptThread extends Thread {
                 ParticleArea.explorerIDSem.release();
 
                 ParticleArea.explorerList.add(tempParticle);
-                System.out.println(tempParticle.getJSON());
                 Main.explorerListeners.add(new ExplorerListener(tempInStream, tempOutStream, tempParticle));
 
                 Main.explorerListeners.get(Main.explorerListeners.size() - 1).start();

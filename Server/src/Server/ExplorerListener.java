@@ -35,8 +35,6 @@ public class ExplorerListener extends Thread {
             bytesRead = inputStream.read(buffer);
             String receivedData = new String(buffer, 0, bytesRead);
 
-            System.out.println(receivedData);
-
             JSONObject json = new JSONObject(receivedData);
 
             Double tempx = json.getDouble("x");
@@ -49,8 +47,7 @@ public class ExplorerListener extends Thread {
                 tempy = 1271.0;
             }
 
-            particle.moveParticle(tempx, tempy);
-
+            Main.commandQueue.add(new Command(tempx, tempy, particle));
 
         } catch (IOException e) {
             throw new RuntimeException(e);

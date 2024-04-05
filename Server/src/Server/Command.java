@@ -43,6 +43,13 @@ public class Command implements Delayed {
         this.direction = direction;
     }
 
+    Command(Double x, Double y, Particle p) {
+        this.type = CommandType.UPDATE_EXPLORER;
+        this.x = x;
+        this.y = y;
+        this.p = p;
+    }
+
     @Override
     public long getDelay(TimeUnit unit) {
         long diff = time - System.currentTimeMillis();
@@ -59,5 +66,6 @@ enum CommandType {
     MOVE_PARTICLE,
     GENERATE_PARTICLE,
     MOVE_USER,
+    UPDATE_EXPLORER,
     SPAWN_USER
 }

@@ -11,6 +11,7 @@ public class WorkerRunnable implements Runnable {
     public void run() {
         switch (command.type) {
             case MOVE_USER -> updateUserPosition(command.direction);
+            case UPDATE_EXPLORER -> updateExplorerPosition(command.x, command.y, command.p);
             case MOVE_PARTICLE -> updateParticlePosition(command.p);
             case GENERATE_PARTICLE -> {
                 try {
@@ -20,6 +21,10 @@ public class WorkerRunnable implements Runnable {
                 }
             }
         }
+    }
+
+    private void updateExplorerPosition(Double x, Double y, Particle p) {
+        p.moveParticle(x, y);
     }
 
     private void updateUserPosition(Direction direction) {
