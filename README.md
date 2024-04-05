@@ -17,7 +17,7 @@ To run the program, follow these steps:
 
 Alternatively, you can run the program using IntelliJ IDEA:
 
-Open the project in IntelliJ IDEA.
+Open "PRROJECT_FOLDER/Server" as a project in IntelliJ IDEA.
 1. Build the application.
 2. Run the Server.Main.java file.
 3. Once the program is running, you can:
