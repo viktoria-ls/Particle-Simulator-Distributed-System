@@ -15,6 +15,7 @@
 #include<iostream>
 #include <cmath>
 #include <unordered_map>
+#include <chrono>
 
 #include <thread>
 #include <WinSock2.h>
@@ -305,9 +306,23 @@ int main()
 
 	glfwSetKeyCallback(window, keyCallback);
 
+	auto lastUpdateTime = std::chrono::steady_clock::now();
+	float currFps = io.Framerate;
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
+		// Calculate the time elapsed since the last frame rate update
+		auto currentTime = std::chrono::steady_clock::now();
+		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastUpdateTime).count() / 1000.0;
+
+		// If more than 0.5 seconds have elapsed, update the frame rate display
+		if (elapsedTime >= 0.5)
+		{
+			currFps = io.Framerate;
+			lastUpdateTime = currentTime;
+		}
+
 		// Background color
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -322,7 +337,7 @@ int main()
 
 		ImGui::Begin("Title", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 		drawElements();
-		ImGui::Text("Current FPS: %.3f", io.Framerate);
+		ImGui::Text("Current FPS: %.3f", currFps);
 		ImGui::End();
 
 		// Renders the ImGUI elements

@@ -40,7 +40,6 @@ public class ParticleArea extends JPanel {
         super.paintComponent(g);
         this.setBackground(Color.WHITE);
         g2d = (Graphics2D) g.create();
-        System.out.println("In paint component");
 //        System.out.println(user.x.intValue() + " " + user.y.intValue());
 
         if (Controller.SIM_MODE == ModeType.EXPLORER) {
@@ -71,7 +70,7 @@ public class ParticleArea extends JPanel {
         }
 
         for(Particle p : explorerList) {
-            System.out.println("Painting here");
+//            System.out.println("Painting here");
             g2d.setColor(Color.red);
             g2d.fillOval(p.x.intValue(), p.y.intValue(), ovalSize, ovalSize);
         }
