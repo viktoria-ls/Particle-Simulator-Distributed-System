@@ -46,6 +46,10 @@ std::vector<Sprite> particles = {
 	Sprite(9, 0)
 };
 
+std::vector<Sprite> explorers = {
+	Sprite(-100, -100)
+};
+
 std::string returnJSON(const std::string& receivedData) {
 	size_t startPos = receivedData.find('{'); // Find the position of the opening brace
 	size_t endPos = receivedData.rfind('}'); // Find the position of the closing brace
@@ -60,6 +64,7 @@ std::string returnJSON(const std::string& receivedData) {
 void parseJSON(const std::string& jsonString, SOCKET socket) {
 	if (jsonString.compare("finish") == 0) {
 		particles.clear();
+		explorers.clear();
 		DOUBLE tempx = user.x >= 1271 ? 1271 : user.x;
 		DOUBLE tempy = 711 - user.y >= 711 ? 711 : 711 - user.y;
 
@@ -71,11 +76,19 @@ void parseJSON(const std::string& jsonString, SOCKET socket) {
 	}
 	else {
 		json data = json::parse(jsonString);
-
 		double x = data["x"];
 		double y = data["y"];
 
-		particles.push_back(Sprite(x, 720 - y - 9));
+		std::string type = data["type"];
+
+		if (type.compare("normal") == 0) {
+			cout << "its a particle\n";
+			particles.push_back(Sprite(x, 720 - y - 9));
+		}
+		else if (type.compare("explorer") == 0) {
+			cout << "its an explorer\n";
+			explorers.push_back(Sprite(x, 720 - y - 9));
+		}
 	}
 }
 
@@ -123,6 +136,8 @@ void listenToServer(SOCKET socket) {
 			msg.append(buffer + startIndex, bytesReceived - startIndex);
 			totalBytes += bytesReceived;
 		}
+
+		cout << msg + "\n";
 
 		std::string receivedJSON = returnJSON(msg);
 		parseJSON(receivedJSON, socket);
@@ -182,6 +197,16 @@ static void drawElements(std::vector<Sprite>& particles) {
 		translatedPY = 720 - (720 * (translatedPY / 171));
 
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
+	}
+
+	for (int i = 0; i < explorers.size(); i++) {
+		double translatedPX = explorers[i].x + xVector;
+		double translatedPY = explorers[i].y + yVector;
+
+		translatedPX = 1280 * (translatedPX / 297);
+		translatedPY = 720 - (720 * (translatedPY / 171));
+
+		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(220, 20, 60, 255), 32);
 	}
 
 	ImVec2 topBorderEndPoint = ImVec2(1271, -379.25 + user.y - (3.2 * (720 - user.y))); 
@@ -292,8 +317,8 @@ int main()
 		ImGui::SetNextWindowSize(ImVec2(frameWidth, frameHeight));
 
 		ImGui::Begin("Title", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
-		ImGui::Text("Current FPS: %.3f", io.Framerate);
 		drawElements(particles);
+		ImGui::Text("Current FPS: %.3f", io.Framerate);
 		ImGui::End();
 
 		// Renders the ImGUI elements

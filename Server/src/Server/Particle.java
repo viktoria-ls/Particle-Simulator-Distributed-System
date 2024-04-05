@@ -35,6 +35,6 @@ public class Particle {
     }
 
     public String getJSON() {
-        return "{\"x\":" + x + ", \"y\":" + y + "}";
+        return "{\"type\":" + "\"" + type + "\"" +  ", \"x\":" + x + ", \"y\":" + y + "}";
     }
 }
