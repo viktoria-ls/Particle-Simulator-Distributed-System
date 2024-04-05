@@ -5,8 +5,14 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Semaphore;
 
 public class ParticleArea extends JPanel {
+    static int currParticleID = 0;
+    static Semaphore particleIDSem = new Semaphore(1);
+
+    static int currExplorerID = 0;
+    static Semaphore explorerIDSem = new Semaphore(1);
     static CopyOnWriteArrayList<Particle> particleList = new CopyOnWriteArrayList<>();
     static CopyOnWriteArrayList<Particle> explorerList = new CopyOnWriteArrayList<>();
     int THREAD_COUNT = 8;

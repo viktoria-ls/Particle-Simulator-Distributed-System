@@ -12,7 +12,13 @@ public class WorkerRunnable implements Runnable {
         switch (command.type) {
             case MOVE_USER -> updateUserPosition(command.direction);
             case MOVE_PARTICLE -> updateParticlePosition(command.p);
-            case GENERATE_PARTICLE -> generateParticle();
+            case GENERATE_PARTICLE -> {
+                try {
+                    generateParticle();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -129,9 +135,15 @@ public class WorkerRunnable implements Runnable {
         Main.commandQueue.add(new Command(p, command.velocity, command.angle));
     }
 
-    private void generateParticle() {
+    private void generateParticle() throws InterruptedException {
         System.out.println("Generated");
-        Particle temp = new Particle(command.x, command.y, command.velocity, command.angle);
+
+        ParticleArea.particleIDSem.acquire();
+        Particle temp = new Particle(command.x, command.y, command.velocity, command.angle, ParticleArea.currParticleID);
+        ParticleArea.currParticleID++;
+        ParticleArea.particleIDSem.release();
+
+        System.out.println(temp.getJSON());
         ParticleArea.particleList.add(temp);
         Main.commandQueue.add(new Command(temp, command.velocity, command.angle));
     }

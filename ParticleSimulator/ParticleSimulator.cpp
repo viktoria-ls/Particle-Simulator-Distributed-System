@@ -14,6 +14,7 @@
 #include<algorithm>
 #include<iostream>
 #include <cmath>
+#include <unordered_map>
 
 #include <thread>
 #include <WinSock2.h>
@@ -42,13 +43,9 @@ const double spriteSize = ((frameWidth / 33.0) + (frameHeight / 19.0)) / 2.0;
 const int userVelocity = 1;
 Sprite user = { 0, 0 };
 
-std::vector<Sprite> particles = {
-	Sprite(9, 0)
-};
+std::unordered_map<int, Sprite> particleMap;
+std::unordered_map<int, Sprite> explorerMap;
 
-std::vector<Sprite> explorers = {
-	Sprite(-100, -100)
-};
 
 std::string returnJSON(const std::string& receivedData) {
 	size_t startPos = receivedData.find('{'); // Find the position of the opening brace
@@ -63,8 +60,6 @@ std::string returnJSON(const std::string& receivedData) {
 
 void parseJSON(const std::string& jsonString, SOCKET socket) {
 	if (jsonString.compare("finish") == 0) {
-		particles.clear();
-		explorers.clear();
 		DOUBLE tempx = user.x >= 1271 ? 1271 : user.x;
 		DOUBLE tempy = 711 - user.y >= 711 ? 711 : 711 - user.y;
 
@@ -78,16 +73,31 @@ void parseJSON(const std::string& jsonString, SOCKET socket) {
 		json data = json::parse(jsonString);
 		double x = data["x"];
 		double y = data["y"];
+		int id = data["id"];
 
 		std::string type = data["type"];
 
 		if (type.compare("normal") == 0) {
+			auto particleIt = particleMap.find(id);
+			if (particleIt == particleMap.end()) {
+				cout << "new particle\n";
+				particleMap.insert({ id, Sprite(x, 720 - y - 9) });
+			}
+			else {
+				cout << "updating\n";
+				particleIt->second = Sprite(x, 720 - y - 9);
+			}
 			cout << "its a particle\n";
-			particles.push_back(Sprite(x, 720 - y - 9));
 		}
 		else if (type.compare("explorer") == 0) {
 			cout << "its an explorer\n";
-			explorers.push_back(Sprite(x, 720 - y - 9));
+			auto explorerIt = explorerMap.find(id);
+			if (explorerIt == explorerMap.end()) {
+				explorerMap.insert({ id, Sprite(x, 720 - y - 9) });
+			}
+			else {
+				explorerIt->second = Sprite(x, 720 - y - 9);
+			}
 		}
 	}
 }
@@ -121,7 +131,6 @@ void listenToServer(SOCKET socket) {
 
 			bytesReceived = recv(socket, buffer, lengthPrefix - totalBytes, 0);
 
-			cout << "Total Bytes = " << totalBytes << " Bytes Receieved = " << bytesReceived << "\n\n";
 			if (bytesReceived == SOCKET_ERROR) {
 				std::cerr << "Error receiving data from server" << std::endl;
 				break;
@@ -144,7 +153,6 @@ void listenToServer(SOCKET socket) {
 	}
 }
 
-// TODO: Send updated user position to server and wait for updated particle list
 static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
 		if (user.y + userVelocity >= 711)
@@ -178,7 +186,7 @@ static void keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	
 }
 
-static void drawElements(std::vector<Sprite>& particles) {
+static void drawElements() {
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 	//Translation Vector
 	double xVector = 148.5 - user.x;
@@ -187,11 +195,11 @@ static void drawElements(std::vector<Sprite>& particles) {
 	double clientUserX = 1280 * ((148.5)/297);
 	double clientUserY = 720 * ((85.5)/171);
 
-	drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize / 2.0, IM_COL32_WHITE, 32);
+	//drawList->AddCircleFilled(ImVec2(clientUserX, clientUserY), spriteSize / 2.0, IM_COL32_WHITE, 32);
 
-	for (int i = 0; i < particles.size(); i++) {
-		double translatedPX = particles[i].x + xVector;
-		double translatedPY = particles[i].y + yVector;
+	for (const auto& pair : particleMap) {
+		double translatedPX = pair.second.x + xVector;
+		double translatedPY = pair.second.y + yVector;
 
 		translatedPX = 1280 * (translatedPX / 297);
 		translatedPY = 720 - (720 * (translatedPY / 171));
@@ -199,14 +207,14 @@ static void drawElements(std::vector<Sprite>& particles) {
 		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(160, 32, 240, 255), 32);
 	}
 
-	for (int i = 0; i < explorers.size(); i++) {
-		double translatedPX = explorers[i].x + xVector;
-		double translatedPY = explorers[i].y + yVector;
+	for (const auto& pair : explorerMap) {
+		double translatedPX = pair.second.x + xVector;
+		double translatedPY = pair.second.y + yVector;
 
 		translatedPX = 1280 * (translatedPX / 297);
 		translatedPY = 720 - (720 * (translatedPY / 171));
 
-		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32(220, 20, 60, 255), 32);
+		drawList->AddCircleFilled(ImVec2(translatedPX, translatedPY), spriteSize / 2.0, IM_COL32_WHITE, 32);
 	}
 
 	ImVec2 topBorderEndPoint = ImVec2(1271, -379.25 + user.y - (3.2 * (720 - user.y))); 
@@ -258,16 +266,12 @@ int main()
 	// Convert Sprite object to JSON string
 	string jsonStr = "{\"x\":" + to_string(tempx) + ", \"y\":" + to_string(tempy) + "}";
 
-	cout << jsonStr;
+	//cout << jsonStr;
 	// Send JSON to server
 	send(mySocket, jsonStr.c_str(), jsonStr.length(), 0);
 
 	std::thread listenerThread(listenToServer, mySocket);
 
-	// dummy particle list
-	
-	std::cout << "PX " << particles[0].x << "\n";
-	std::cout << "PY " << particles[0].y << "\n";
 
 	// Initialize GLFW
 	glfwInit();
@@ -317,7 +321,7 @@ int main()
 		ImGui::SetNextWindowSize(ImVec2(frameWidth, frameHeight));
 
 		ImGui::Begin("Title", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
-		drawElements(particles);
+		drawElements();
 		ImGui::Text("Current FPS: %.3f", io.Framerate);
 		ImGui::End();
 

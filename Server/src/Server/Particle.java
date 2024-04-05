@@ -6,19 +6,22 @@ public class Particle {
     Double velocity;
     Double angle;
     String type;
+    int id;
 
-    Particle(Double x, Double y, Double velocity, Double angle) {
+    Particle(Double x, Double y, Double velocity, Double angle, int id) {
         this.x = x;
         this.y = y;
         this.velocity = velocity;
         this.angle = angle;
         this.type = "normal";
+        this.id = id;
     }
 
-    Particle(Double x, Double y, String type) {
+    Particle(Double x, Double y, String type, int id) {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.id = id;
     }
 
     public void moveParticle(Double nx, Double ny) {
@@ -35,6 +38,6 @@ public class Particle {
     }
 
     public String getJSON() {
-        return "{\"type\":" + "\"" + type + "\"" +  ", \"x\":" + x + ", \"y\":" + y + "}";
+        return "{\"type\":" + "\"" + type + "\"" + ", \"x\":" + x + ", \"y\":" + y + ", \"id\":" + id +"}";
     }
 }

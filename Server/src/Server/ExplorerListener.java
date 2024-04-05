@@ -16,7 +16,6 @@ public class ExplorerListener extends Thread {
         inputStream = in;
         outputStream = out;
         particle = p;
-//        particle.moveParticle(0.0, 0.0);
     }
 
     public void run() {
@@ -62,12 +61,6 @@ public class ExplorerListener extends Thread {
     public void send() {
         ParticleArea.particleList.forEach(p -> {
             try {
-//                try {
-//                    outputStream.writeInt("particle".length());
-//                    outputStream.writeUTF("particle");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
                 String test = p.getJSON();
                 outputStream.writeInt(test.length());
                 outputStream.writeUTF(test);
@@ -78,12 +71,7 @@ public class ExplorerListener extends Thread {
 
         ParticleArea.explorerList.forEach(e -> {
             try {
-//                try {
-//                    outputStream.writeInt("explorer".length());
-//                    outputStream.writeUTF("explorer");
-//                } catch (IOException e2) {
-//                    e2.printStackTrace();
-//                }
+
                 String eJson = e.getJSON();
                 outputStream.writeInt(eJson.length());
                 outputStream.writeUTF(eJson);

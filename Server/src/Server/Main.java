@@ -79,15 +79,21 @@ class ExplorerAcceptThread extends Thread {
                 System.out.println(tempx);
                 System.out.println(tempy);
 
-                Particle tempParticle = new Particle(tempx, tempy, "explorer");
+                ParticleArea.explorerIDSem.acquire();
+                Particle tempParticle = new Particle(tempx, tempy, "explorer", ParticleArea.currExplorerID);
+                ParticleArea.currExplorerID++;
+                ParticleArea.explorerIDSem.release();
 
                 ParticleArea.explorerList.add(tempParticle);
+                System.out.println(tempParticle.getJSON());
                 Main.explorerListeners.add(new ExplorerListener(tempInStream, tempOutStream, tempParticle));
 
                 Main.explorerListeners.get(Main.explorerListeners.size() - 1).start();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
